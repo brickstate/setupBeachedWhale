@@ -50,6 +50,10 @@ public class Deck
         }
  
         shuffle();
+
+        // Draw a card from the pile and put in discard pile
+        // This is the starting card
+        discard.add(drawCard());
     }
  
     public Card drawCard() 
@@ -57,6 +61,10 @@ public class Deck
         Card c = deck.remove(cardNum - 1);
         cardNum -= 1;
         return c;
+    }
+
+    public void playCard(Card c) {
+        discard.add(c);
     }
  
     public void Card(Card c) 
