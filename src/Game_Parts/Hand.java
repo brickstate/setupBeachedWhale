@@ -34,4 +34,14 @@ public class Hand
         Value[] values = Value.values();
         return values[random.nextInt(values.length)];
     }
+
+    public void addCard(Card card) {
+        hand.add(card);
+    }
+
+    public void addCards(Card[] cards) {
+        for (Card c : cards) {
+            hand.add(c);
+        }
+    }
 }

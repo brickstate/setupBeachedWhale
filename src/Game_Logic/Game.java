@@ -1,12 +1,12 @@
 package Game_Logic;
 
 import Game_Parts.Card;
+import Game_Parts.Deck;
 import Game_Parts.Hand;
 import Types.Color;
 import Types.Value;
 
 import java.util.Scanner;
-import java.util.Random;
 
 public class Game 
 {
@@ -15,6 +15,7 @@ public class Game
     int player_turn = 0;
     Hand hands[];
     Card topCard;
+    Deck deck;
     Boolean plusTwoPlayed = false;
     Boolean plusFourPlayed = false;
     int direction = 1;
@@ -33,7 +34,9 @@ public class Game
             hands[i] = new Hand();
        }
 
-        gameLoop();
+       deck = new Deck(); // intialize deck
+       
+       gameLoop(); // start game 
     }    
 
     /*
@@ -58,10 +61,9 @@ public class Game
         }
     }
 
-    public void updateTopCard(Color color, Value value)
+    public void updateTopCard()
     {
-        topCard.color = color;
-        topCard.value = value;
+        topCard = deck.peekDiscard();
     }
 
     public Boolean is_Valid(Card card)
@@ -95,17 +97,10 @@ public class Game
         return anyIsInvalid;
     }
 
-    public void initTopCard()
-    {
-        Random random = new Random();
-        Color color = Color.values()[random.nextInt(Color.values().length)];
-        Value value = Value.values()[random.nextInt(Value.values().length)];
-        topCard = new Card(color, value);
-    }
-
     public void gameLoop()
     {
-        initTopCard();
+        updateTopCard(); // Initialize top card
+
         while(true)
         {
             System.out.printf("Top card color: %s\n", topCard.color);
@@ -113,18 +108,23 @@ public class Game
             if(plusTwoPlayed)
             {
                 //Draw two cards
+                hands[player_turn].addCards(deck.drawMultipleCards(2));
+                plusTwoPlayed = false;
             }
             else if(plusFourPlayed)
             {
                 //Draw four cards
+                hands[player_turn].addCards(deck.drawMultipleCards(4));
+                plusFourPlayed = false;
             }
 
             System.out.printf("Player %d's turn\n", player_turn + 1);
             System.out.printf("Player %d's cards\n", player_turn + 1);
 
-            if(!handIsValid(hands[player_turn]))
+            while (!handIsValid(hands[player_turn]))
             {
                 //Draw cards until a valid card can be played
+                hands[player_turn].addCard(deck.drawCard());
             }
 
             for(int i = 0; i < hands[player_turn].hand.size(); i++)
@@ -156,12 +156,12 @@ public class Game
 
             if(card_played.value == Value.SKIP)
             {
-                updateTopCard(card_played.color, card_played.value);
+                updateTopCard();
                 player_turn = (player_turn + direction + hands.length + 1) % hands.length;
             }
             else if(card_played.value == Value.REVERSE)
             {
-                updateTopCard(card_played.color, card_played.value);
+                updateTopCard();
                 player_turn = (player_turn + direction + hands.length) % hands.length;
             }
             else if(card_played.value == Value.COLORSWITCH)
@@ -188,19 +188,19 @@ public class Game
                 
                 if(colorChosen.equals("blue"))
                 {
-                    updateTopCard(Color.BLUE, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 else if(colorChosen.equals("yellow"))
                 {
-                    updateTopCard(Color.YELLOW, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 else if(colorChosen.equals("red"))
                 {
-                    updateTopCard(Color.RED, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 else if(colorChosen.equals("green"))
                 {
-                    updateTopCard(Color.GREEN, Value.COLORSWITCH);
+                    updateTopCard();
                 }
 
                 player_turn = (player_turn + direction + hands.length) % hands.length;
@@ -229,19 +229,19 @@ public class Game
                 
                 if(colorChosen.equals("blue"))
                 {
-                    updateTopCard(Color.BLUE, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 else if(colorChosen.equals("yellow"))
                 {
-                    updateTopCard(Color.YELLOW, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 else if(colorChosen.equals("red"))
                 {
-                    updateTopCard(Color.RED, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 else if(colorChosen.equals("green"))
                 {
-                    updateTopCard(Color.GREEN, Value.COLORSWITCH);
+                    updateTopCard();
                 }
                 
                 plusFourPlayed = true;
@@ -251,12 +251,12 @@ public class Game
             else if(card_played.value == Value.PLUSTWO)
             {
                 plusTwoPlayed = true;
-                updateTopCard(card_played.color, card_played.value);
+                updateTopCard();
                 player_turn = (player_turn + direction + hands.length) % hands.length;
             }
             else
             {
-                updateTopCard(card_played.color, card_played.value);
+                updateTopCard();
                 player_turn = (player_turn + direction + hands.length) % hands.length;
             }
         }
