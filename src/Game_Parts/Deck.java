@@ -58,7 +58,7 @@ public class Deck
  
     public Card drawCard() 
     {
-        Card c = deck.remove(cardNum - 1);
+        Card c = deck.remove(deck.size() - 1);
         cardNum -= 1;
         return c;
     }
