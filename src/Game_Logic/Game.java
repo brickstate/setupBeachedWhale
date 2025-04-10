@@ -26,17 +26,16 @@ public class Game
      */
     public Game()
     {
-       num_players = playerSetup();
-       hands = new Hand[num_players];
+        deck = new Deck(); // intialize deck
+        num_players = playerSetup();
+        hands = new Hand[num_players];
 
-       for(int i = 0; i < num_players; i++)
-       {
-            hands[i] = new Hand();
-       }
-
-       deck = new Deck(); // intialize deck
-       
-       gameLoop(); // start game 
+        for(int i = 0; i < num_players; i++)
+        {
+                hands[i] = new Hand(deck);
+        }
+        
+        gameLoop(); // start game 
     }    
 
     /*
@@ -72,7 +71,7 @@ public class Game
         {
             return true;
         }
-        else if(card.value == Value.COLORSWITCH || card.color == Color.WILD)
+        else if(card.value == Value.COLORSWITCH || card.color == Color.WILD || card.value == Value.PLUSFOUR)
         {
             return true;
         }
@@ -140,13 +139,22 @@ public class Game
 
             while(!index_valid || !is_Valid(card_played))
             {
+                System.out.println("=================================");
+                System.out.println("is_Valid: " + is_Valid(card_played));
+                System.out.println("index_valid: " + index_valid);
+                System.out.println("=================================");
                 System.out.println("Invalid card. Please enter again.");
                 num_played = kb.nextInt() - 1;
+
+                // update index and card chosen 
+                index_valid = num_played >= 0 && num_played < hands[player_turn].hand.size();
+                card_played = hands[player_turn].hand.get(num_played);
             }
 
             System.out.printf("Card played color: %s\n", card_played.color);
             System.out.printf("Card played value: %s\n", card_played.value);
-            hands[player_turn].hand.remove(num_played);
+           
+            deck.playCard(hands[player_turn].hand.remove(num_played)); // place the card down on discard pile
 
             if(hands[player_turn].hand.size() == 0)
             {
@@ -168,37 +176,40 @@ public class Game
             {
                 Boolean colorIsValid = false;
 
+                kb.nextLine(); // eat newline
                 System.out.println("Please choose a color. The options are blue, yellow, red, green");
-                String colorChosen = kb.nextLine();
-                colorChosen.toLowerCase();
+                String colorChosen = kb.nextLine().toUpperCase();
 
                 while(!colorIsValid)
                 {
-                    if (colorChosen.equals("blue") || colorChosen.equals("yellow") ||
-                        colorChosen.equals("red") || colorChosen.equals("green"))
+                    if (colorChosen.equals("BLUE") || colorChosen.equals("YELLOW") ||
+                        colorChosen.equals("RED") || colorChosen.equals("GREEN"))
                     {
                         colorIsValid = true;
                     }
                     else
                     {
                         System.out.println("Invalid color. Please try again.");
-                        colorChosen = kb.nextLine().toLowerCase(); // update and lowercase again
+                        colorChosen = kb.nextLine().toUpperCase(); // update and lowercase again
                     }
                 }
+
+                // Update color of top card to color chosen by player from wild card
+                card_played.color = Color.valueOf(colorChosen.toUpperCase());
                 
-                if(colorChosen.equals("blue"))
+                if(colorChosen.equals("BLUE"))
                 {
                     updateTopCard();
                 }
-                else if(colorChosen.equals("yellow"))
+                else if(colorChosen.equals("YELLOW"))
                 {
                     updateTopCard();
                 }
-                else if(colorChosen.equals("red"))
+                else if(colorChosen.equals("RED"))
                 {
                     updateTopCard();
                 }
-                else if(colorChosen.equals("green"))
+                else if(colorChosen.equals("GREEN"))
                 {
                     updateTopCard();
                 }
@@ -209,37 +220,40 @@ public class Game
             {
                 Boolean colorIsValid = false;
 
+                kb.nextLine(); // eat newline
                 System.out.println("Please choose a color. The options are blue, yellow, red, green");
-                String colorChosen = kb.nextLine();
-                colorChosen.toLowerCase();
+                String colorChosen = kb.nextLine().toUpperCase();
 
                 while(!colorIsValid)
                 {
-                    if (colorChosen.equals("blue") || colorChosen.equals("yellow") ||
-                        colorChosen.equals("red") || colorChosen.equals("green"))
+                    if (colorChosen.equals("BLUE") || colorChosen.equals("YELLOW") ||
+                        colorChosen.equals("RED") || colorChosen.equals("GREEN"))
                     {
                         colorIsValid = true;
                     }
                     else
                     {
                         System.out.println("Invalid color. Please try again.");
-                        colorChosen = kb.nextLine().toLowerCase(); // update and lowercase again
+                        colorChosen = kb.nextLine().toUpperCase(); // update and lowercase again
                     }
                 }
                 
-                if(colorChosen.equals("blue"))
+                // Update color of top card to color chosen by player from wild card
+                card_played.color = Color.valueOf(colorChosen.toUpperCase());
+
+                if(colorChosen.equals("BLUE"))
                 {
                     updateTopCard();
                 }
-                else if(colorChosen.equals("yellow"))
+                else if(colorChosen.equals("YELLOW"))
                 {
                     updateTopCard();
                 }
-                else if(colorChosen.equals("red"))
+                else if(colorChosen.equals("RED"))
                 {
                     updateTopCard();
                 }
-                else if(colorChosen.equals("green"))
+                else if(colorChosen.equals("GREEN"))
                 {
                     updateTopCard();
                 }
